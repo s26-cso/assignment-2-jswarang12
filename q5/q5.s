@@ -6,6 +6,16 @@ no_str:     .string "No\n"
 .section .text
 .globl main
 
+# strategy: O(n) time, O(1) space
+#   1. find file length n via lseek(fd, 0, SEEK_END)...
+#   2. setup two file offsets: left (starts at 0, moves right)
+#                              right (starts at n-1, moves left)
+#   3. at each step read one byte from each end and compare them...
+#   4. stop when left >= right... 
+#
+# syscalls (RISC64):
+#   openat = 56, lseek = 62, read = 63, write = 64, close = 57, exit = 93
+
 main:
     addi sp, sp, -48       # make some room on the stack
     sd ra, 40(sp)          # save return address
